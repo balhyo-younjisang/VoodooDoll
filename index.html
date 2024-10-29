@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Voodoo Doll</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik+Wet+Paint&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        flex-direction: column;
+        background-color: black;
+      }
+
+      img {
+        height: 300px;
+        width: 300px;
+        transform: rotate(-30deg);
+      }
+
+      p {
+        color: white;
+        font-size: 40px;
+        font-family: "Rubik Wet Paint", system-ui;
+
+        @media (max-width: 768px) {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+    <div>
+      <p>cursed name : <span id="cursed-name"></span></p>
+      <p>number of curses : <span id="count">0</span></p>
+      <p>remaining time : <span id="remaining-time">15</span></p>
+    </div>
+    <img src="./assets/imgs/voodoodoll.png" alt="저주인형" />
+  </body>
+  <script>
+    const name = prompt("Enter the name of the person to be cursed");
+    const voodooDoll = document.querySelector("img");
+    const count = document.querySelector("#count");
+    const cursedName = document.querySelector("#cursed-name");
+    const remainingTime = document.querySelector("#remaining-time");
+    let remainingSecond = 15;
+
+    const saveToLocalStorage = (key, value) => {
+      const now = new Date();
+      const item = {
+        value: value,
+        expiry: now.getTime() + 24 * 60 * 60 * 1000,
+      };
+      localStorage.setItem(key, JSON.stringify(item));
+    };
+
+    if (!name) {
+      alert("You must enter a name to curse");
+      window.location.reload();
+    }
+
+    cursedName.textContent = name;
+    saveToLocalStorage("cursedName", name);
+
+    window.addEventListener("click", () => {
+      voodooDoll.animate(
+        [
+          { transform: "rotate(-30deg)" },
+          { transform: "rotate(-10deg)" },
+          { transform: "rotate(-30deg)" },
+        ],
+        {
+          duration: 200,
+        }
+      );
+      count.textContent = parseInt(count.textContent) + 1;
+    });
+
+    window.addEventListener("keyup", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        voodooDoll.click();
+      }
+    });
+
+    const interval = setInterval(() => {
+      remainingSecond--;
+      remainingTime.textContent = remainingSecond;
+      if (remainingSecond === 0) {
+        clearInterval(interval);
+        alert("Curse completed");
+        saveToLocalStorage("count", count.textContent);
+        window.location.href = "./result.html";
+      }
+    }, 1000);
+  </script>
+</html>
